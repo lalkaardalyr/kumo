@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"mime"
 	"net/http"
 	"os"
 	"os/signal"
@@ -93,10 +94,11 @@ func New(config Config) *Server {
 
 // unifiedDispatcher routes requests to JSON or Query protocol handlers based on Content-Type.
 func (s *Server) unifiedDispatcher(w http.ResponseWriter, r *http.Request) {
-	contentType := r.Header.Get("Content-Type")
+	// Parse media type per RFC 2045 (e.g. "application/x-www-form-urlencoded; charset=utf-8").
+	mediaType, _, _ := mime.ParseMediaType(r.Header.Get("Content-Type"))
 
 	// Query protocol uses form-urlencoded.
-	if contentType == "application/x-www-form-urlencoded" {
+	if mediaType == "application/x-www-form-urlencoded" {
 		s.queryDispatcher.ServeHTTP(w, r)
 
 		return
