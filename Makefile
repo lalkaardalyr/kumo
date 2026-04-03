@@ -1,4 +1,4 @@
-.PHONY: build run test test-integration clean docker lint lint-fix fmt fmt-diff
+.PHONY: build run test test-integration test-helm-e2e clean docker lint lint-fix fmt fmt-diff
 
 BINARY_NAME=kumo
 VERSION?=$(shell grep 'const Version' version.go | cut -d'"' -f2)
@@ -22,6 +22,9 @@ test-cover:
 
 test-integration:
 	go test -C test -v -tags=integration ./integration/...
+
+test-helm-e2e:
+	bash test/e2e/helm-e2e.sh
 
 # Lint
 lint:
